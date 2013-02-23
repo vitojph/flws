@@ -78,3 +78,4 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
 
 FreeLing es un conjunto de librerías de procesamiento diseñadas para ser invocadas desde otros programas. Las librerías se instalan por defecto en `/usr/local/lib/libfreeling.so`. Sin embargo, un ejecutable a modo de ejemlo instalado por defecto en `/usr/local/bin/analyzer`.
 
+Blablabla
