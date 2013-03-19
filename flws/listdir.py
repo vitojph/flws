@@ -1,5 +1,5 @@
 from flask import Flask
-from flask.ext import Api, Rosurce
+from flask.ext.restful import Api, Resource
 import os
 
 app = Flask(__name__)
