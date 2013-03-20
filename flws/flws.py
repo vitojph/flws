@@ -72,7 +72,7 @@ class Analyzer(Resource):
     def post(self):
         """docstring for post"""
         args = parser.parse_args()
-        text = args["text"]
+        text = unicode(args["text"])
         # tokenize and analyze the input string
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
@@ -87,7 +87,8 @@ class Analyzer(Resource):
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                output.append([word.get_form(), word.get_lemma(), word.get_tag(), word.get_senses_string()])
+                #output.append([word.get_form(), word.get_lemma(), word.get_tag(), word.get_senses_string()])
+                output.append(word.get_form())
         return output
 
     ## output results
