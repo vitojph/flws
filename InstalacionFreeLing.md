@@ -79,7 +79,6 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
 FreeLing es un conjunto de librerías de procesamiento diseñadas para ser invocadas desde otros programas. Las librerías se instalan por defecto en `/usr/local/lib/libfreeling.so`. Sin embargo, un ejecutable a modo de ejemlo instalado por defecto en `/usr/local/bin/analyzer`.
 
 
-<<<<<<< HEAD
 ## Instalación del API de Python
 
 Se puede compilar freeling para que sea accesible directamente desde otros
@@ -93,10 +92,3 @@ lenguajes. Concretamente, me interesa Python: [pyfreeling](https://bitbucket.org
 
 También he bajado las fuentes de `pyfreeling`. Las he compilado y se han instalado en `/usr/local/lib/python2.7/dist-packages/` aunque, de momento, no las voy a usar. 
 
-
-
-
-
-
-=======
->>>>>>> 4d4d6670f3dae06e578895dc8dbae527a4107b97
