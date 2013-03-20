@@ -43,10 +43,9 @@ op.set_data_files("",
 # Create analyzers
 tk = freeling.tokenizer(DATA + LANG + "/tokenizer.dat")
 sp = freeling.splitter(DATA + LANG + "/splitter.dat")
-#mf = freeling.maco(op)
-#tg = freeling.hmm_tagger(LANG, DATA + LANG + "/tagger.dat", 1, 2)
-#sen = freeling.senses(DATA+LANG+"/senses.dat")
-
+mf = freeling.maco(op)
+tg = freeling.hmm_tagger(LANG, DATA + LANG + "/tagger.dat", 1, 2)
+sen = freeling.senses(DATA+LANG+"/senses.dat")
 #parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 #dep = freeling.dep_txala(DATA + LANG+ "/dep/dependences.dat", parser.get_start_symbol())
 
@@ -77,9 +76,9 @@ class Analyzer(Resource):
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         #if inpf == "":
-        #sentences = mf.analyze(sentences)
-        #sentences = tg.analyze(sentences)
-        #sentences = sen.analyze(sentences)
+        sentences = mf.analyze(sentences)
+        sentences = tg.analyze(sentences)
+        sentences = sen.analyze(sentences)
         #ls = parser.analyze(ls)
         #ls = dep.analyze(ls)
        
@@ -87,8 +86,8 @@ class Analyzer(Resource):
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                #output.append([word.get_form(), word.get_lemma(), word.get_tag(), word.get_senses_string()])
-                output.append(word.get_form())
+                output.append([word.get_form(), word.get_lemma(), word.get_tag(), word.get_senses_string()])
+                #output.append(word.get_form())
         return output
 
     ## output results
