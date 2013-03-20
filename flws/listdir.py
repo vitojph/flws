@@ -12,7 +12,7 @@ output = {
 
 class ListDirectory(Resource):
     def get(self):
-        output["output"] = os.listdir("/home/victor/tmp")
+        output["output"] = os.listdir(".")
         return output
 
 api.add_resource(ListDirectory, "/")
