@@ -14,7 +14,7 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
     curl -o freeling-3.0.tar.gz http://devel.cpl.upc.edu/freeling/downloads/21
 
 
-1. Para poder compilar las fuentes, instalo las herramientas de desarrollo: compilador de C++, `automake`
+2. Para poder compilar las fuentes, instalo las herramientas de desarrollo: compilador de C++, `automake`
    y demás dependencias:
 
     sudo aptitude update
@@ -30,7 +30,7 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
 
 
    
-1. Las versiones anteriores de FreeLing tenía muchas dependencias. La actual 3.0 solo tiene dos, que se pueden instalar fácilmente desde los repositorios oficiales de Ubuntu.
+3. Las versiones anteriores de FreeLing tenía muchas dependencias. La actual 3.0 solo tiene dos, que se pueden instalar fácilmente desde los repositorios oficiales de Ubuntu.
 
     Instalo los paquetes en dos tandas, tal y como dice el manual. Pero probablemente se pueda hacer todo de una vez. 
 
@@ -52,12 +52,12 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
     Necesito descargar 519 kB de archivos. Después de desempaquetar se usarán 2.454 kB.
 
 
-1. Descomprimo las fuentes:
+4. Descomprimo las fuentes:
 
     tar xvzf FreeLing-3.0.tar.gz
 
 
-1. Compruebo que tengo todas las herramientas necesarias y creo el `makefile`.
+5. Compruebo que tengo todas las herramientas necesarias y creo el `makefile`.
    El sistema imprime por pantalla todas las comprobaciones. Si hemos instalado
    todas las dependencias no debería saltar ningún warning.
 
@@ -65,16 +65,35 @@ A continuación voy a describir los pasos que he seguido para compilar e instala
     ./configure
 
 
-1. Compilo. Es el paso más largo y el sistema escupe muchos mensajes:
+6. Compilo. Es el paso más largo y el sistema escupe muchos mensajes:
 
     make
 
 
-1. Instalo los binarios donde corresponde. En este caso necesito permisos de
+7. Instalo los binarios donde corresponde. En este caso necesito permisos de
    administrador.
 
     sudo make install
 
 
 FreeLing es un conjunto de librerías de procesamiento diseñadas para ser invocadas desde otros programas. Las librerías se instalan por defecto en `/usr/local/lib/libfreeling.so`. Sin embargo, un ejecutable a modo de ejemlo instalado por defecto en `/usr/local/bin/analyzer`.
+
+
+## Instalación del API de Python
+
+Se puede compilar freeling para que sea accesible directamente desde otros
+lenguajes. Concretamente, me interesa Python: [pyfreeling](https://bitbucket.org/Josu/pyfreeling/src).
+
+1. Antes hay que instalar las librerías de desarrollo de Python.
+
+    sudo aptitude install python2.7-dev
+
+2. Después, hay que modificar el `Makefile` para que funcione con la versión de Python que tenemos instalada (`python-2.7`) según las instrucciones (véase `~/tmp/freeling-3.0/APIs/python/README`) y compilar. Dicha compilación da como resultado la creación de dos nuevos ficheros: `freeling.py` y `\_freeling.so`, que hay que copiar en el directorio de python: `/usr/lib/python2.7/`.
+
+También he bajado las fuentes de `pyfreeling`. Las he compilado y se han instalado en `/usr/local/lib/python2.7/dist-packages/` aunque, de momento, no las voy a usar. 
+
+
+
+
+
 
