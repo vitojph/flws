@@ -11,7 +11,7 @@ __date__ = "20/03/2013"
 
 
 import freeling
-from flask import Flask
+from flask import Flask, jsonify
 from flask.ext.restful import Api, Resource, reqparse
 
 
@@ -57,7 +57,7 @@ app = Flask(__name__)
 api = Api(app)
 
 parser = reqparse.RequestParser()
-parser.add_argument("text", type=unicode)
+parser.add_argument("texto", type=unicode)
 
 
 
@@ -71,7 +71,7 @@ class Analyzer(Resource):
     def post(self):
         """docstring for post"""
         args = parser.parse_args()
-        text = unicode(args["text"])
+        text = unicode(args["texto"])
         # tokenize and analyze the input string
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
@@ -86,9 +86,10 @@ class Analyzer(Resource):
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                output.append([word.get_form(), word.get_lemma(), word.get_tag(), word.get_senses_string()])
-                #output.append(word.get_form())
-        return output
+                output.append(dict(palabra=word.get_form(), lema=word.get_lemma(), categoria=word.get_tag())) #, synsets=word.get_senses_string()))
+        
+        return jsonify(resultado=output)
+
 
     ## output results
 #    for s in ls :
@@ -114,5 +115,5 @@ api.add_resource(Analyzer, "/analyzer")
 api.add_resource(ShowText, "/")
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    #app.run(debug=True)
+    app.run(host="0.0.0.0")
