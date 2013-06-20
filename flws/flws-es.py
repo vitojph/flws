@@ -106,6 +106,74 @@ class TokenizerSplitter(Resource):
 
 # ##############################################################################
 
+class NERecognizer(Resource):
+    """Recognizes Named Entities from an input text."""
+    
+    def post(self):
+        #args = parser.parse_args()
+        text = request.json["texto"]
+        tokens = tk.tokenize(text)
+        sentences = sp.split(tokens, 0)
+        sentences = mf.analyze(sentences)
+        sentences = tg.analyze(sentences)
+        
+        output = []
+        for sentence in sentences:
+            words = sentence.get_words()
+            for word in words:
+                # Person (NP00SP0), Geographical location (NP00G00), Organization (NP00O00), and Others (NP00V00)
+                if word.get_tag() in "NP00SP0 NP00G00 NP00000 NP00V00".split():
+                    entities = []
+                    entities.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
+                    output.append(dict(palabra=word.get_form(), entidades=entities))
+
+        return Response(json.dumps(output), mimetype="application/json")
+
+
+# ##############################################################################
+
+class DatesQuatitiesRecognizer(Resource):
+    """Recognizes dates, currencies, and quatities from an input text."""
+    
+    def post(self):
+        #args = parser.parse_args()
+        text = request.json["texto"]
+        tokens = tk.tokenize(text)
+        sentences = sp.split(tokens, 0)
+        sentences = mf.analyze(sentences)
+        sentences = tg.analyze(sentences)
+        
+        output = []
+        for sentence in sentences:
+            words = sentence.get_words()
+            for word in words:
+                # dates
+                tag = word.get_tag()
+                if tag[0] in "W Z".split():
+                    expression = []
+                    if tag == "W":
+                        expression.append(dict(lema=word.get_lemma(), categoria="temporal"))
+                    else:
+                        if tag == "Z":
+                            category = "numero"
+                        elif tag == "Zd":
+                            category = "partitivo"
+                        elif tag == "Zm":
+                            category = "moneda"
+                        elif tag == "Zp":
+                            category = "porcentaje"
+                        elif tag == "Zu":
+                            category = "magnitud"                            
+                        expression.append(dict(lema=word.get_lemma(), categoria=category))
+                                        
+                    output.append(dict(expresion=word.get_form(), entidades=expression))
+
+        return Response(json.dumps(output), mimetype="application/json")
+
+
+
+# ##############################################################################
+
 
 class Tagger(Resource):
     """Performs POS tagging from an input text."""
@@ -122,9 +190,9 @@ class Tagger(Resource):
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                lemas = []
-                lemas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
-                output.append(dict(palabra=word.get_form(), lemas=lemas))
+                lemmas = []
+                lemmas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
+                output.append(dict(palabra=word.get_form(), lemas=lemmas))
         
         return Response(json.dumps(output), mimetype="application/json")
 
@@ -148,12 +216,12 @@ class WSDTagger(Resource):
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                lemas = []
-                lemas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
+                lemmas = []
+                lemmas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
                 # split the senses and get just the synset ID
                 synsets = []
                 [synsets.append(synsetID.split(":")[0]) for synsetID in word.get_senses_string().split("/")]
-                output.append(dict(palabra=word.get_form(), lemas=lemas, synsets=synsets))
+                output.append(dict(palabra=word.get_form(), lemmas=lemas, synsets=synsets))
         
         return Response(json.dumps(output), mimetype="application/json")
 
@@ -201,6 +269,11 @@ api.add_resource(Tagger, "/tagger")
 # perform PoS tagging and WSD from an input text
 api.add_resource(WSDTagger, "/wsdtagger")
 
+# perform NE recognition from an input text
+api.add_resource(NERecognizer, "/ner")
+
+# recognizes dates, currencies and quantities
+api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 
 
 
