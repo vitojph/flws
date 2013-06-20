@@ -11,8 +11,8 @@ __date__ = "20/06/2013"
 
 
 import freeling
-from flask import Flask, jsonify, Response, request
-from flask.ext.restful import Api, Resource, reqparse
+from flask import Flask, Response, request
+from flask.ext.restful import Api, Resource
 import json
 
 # #################################################################
@@ -221,7 +221,7 @@ class WSDTagger(Resource):
                 # split the senses and get just the synset ID
                 synsets = []
                 [synsets.append(synsetID.split(":")[0]) for synsetID in word.get_senses_string().split("/")]
-                output.append(dict(palabra=word.get_form(), lemmas=lemas, synsets=synsets))
+                output.append(dict(palabra=word.get_form(), lemas=lemmas, synsets=synsets))
         
         return Response(json.dumps(output), mimetype="application/json")
 
@@ -280,5 +280,5 @@ api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 api.add_resource(Parser, "/parser")
 
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=9999)
+    app.run(debug=True, host="0.0.0.0", port=8881)
     #app.run(host="0.0.0.0")
