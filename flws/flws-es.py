@@ -7,7 +7,7 @@ Simple flask-based API to access FreeLing functionalities.
 
 __author__ = "Víctor Peinado"
 __email__ = "vitojph@gmail.com"
-__date__ = "13/06/2013"
+__date__ = "20/06/2013"
 
 
 import freeling
@@ -59,8 +59,27 @@ api = Api(app)
 parser = reqparse.RequestParser()
 parser.add_argument("texto", type=unicode)
 
-# Create output
-#output = dict(command="", output="")
+
+class Splitter(Resource):
+    """Splits an input text into tokenized sentences."""
+    
+    def post(self):
+        args = parser.parse_args()
+        text = unicode(args["texto"])
+        tokens = tk.tokenize(text)
+        sentences = sp.split(tokens, 0)
+        
+        # output list of sentences
+        outputSentences = []
+        
+        for sentence in sentences:
+            outputTokens = []
+            for w in sentence.get_words():
+                outputTokens.append(w.get_form())
+            outputSentences.append(dict(oracion=outputTokens))
+    
+        return jsonify(resultado=outputSentences)
+
 
 
 class Tagger(Resource):
@@ -116,11 +135,11 @@ class Parser(Resource):
 
 
 
-
+api.add_resource(Splitter, "/splitter")
 
 api.add_resource(Tagger, "/tagger")
 api.add_resource(Parser, "/parser")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=9999)
     #app.run(host="0.0.0.0")
