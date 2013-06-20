@@ -11,9 +11,9 @@ __date__ = "20/06/2013"
 
 
 import freeling
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Response, request
 from flask.ext.restful import Api, Resource, reqparse
-
+import json
 
 # #################################################################
 # FreeLing settings (borrowed from freeling-3.0/APIs/python/sample.py)
@@ -56,16 +56,39 @@ parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 app = Flask(__name__)
 api = Api(app)
 
-parser = reqparse.RequestParser()
-parser.add_argument("texto", type=unicode)
+#parser = reqparse.RequestParser()
+#parser.add_argument("texto", type=unicode)
 
+
+# ##############################################################################
 
 class Splitter(Resource):
+    """Splits an input text into sentences."""
+    
+    def post(self):
+        #args = parser.parse_args()
+        text = request.json["texto"]
+        tokens = tk.tokenize(text)
+        sentences = sp.split(tokens, 0)
+        
+        # output list of sentences
+        outputSentences = []
+ 
+        for sentence in sentences:
+            outputTokens = []
+            for w in sentence.get_words():
+                outputTokens.append(w.get_form())
+            outputSentences.append(dict(oracion=" ".join(outputTokens)))
+    
+        return Response(json.dumps(outputSentences), mimetype="application/json")
+
+
+
+class TokenizerSplitter(Resource):
     """Splits an input text into tokenized sentences."""
     
     def post(self):
-        args = parser.parse_args()
-        text = unicode(args["texto"])
+        text = request.json["texto"]
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -78,34 +101,36 @@ class Splitter(Resource):
                 outputTokens.append(w.get_form())
             outputSentences.append(dict(oracion=outputTokens))
     
-        return jsonify(resultado=outputSentences)
+        return Response(json.dumps(outputSentences), mimetype="application/json")
 
+
+# ##############################################################################
 
 
 class Tagger(Resource):
-    """FreeLing Analyzer"""
+    """Performs POS tagging from an input text."""
 
     def post(self):
         """docstring for post"""
-        args = parser.parse_args()
-        text = unicode(args["texto"])
-        # tokenize and analyze the input string
+        text = request.json["texto"]
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
-        #if inpf == "":
         sentences = mf.analyze(sentences)
         sentences = tg.analyze(sentences)
-        sentences = sen.analyze(sentences)
-        #ls = parser.analyze(ls)
-        #ls = dep.analyze(ls)
-       
+
         output = []
         for sentence in sentences:
             words = sentence.get_words()
             for word in words:
-                output.append(dict(palabra=word.get_form(), lema=word.get_lemma(), categoria=word.get_tag())) #, synsets=word.get_senses_string()))
+                lemas = []
+                lemas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
+                output.append(dict(palabra=word.get_form(), lemas=lemas))
         
-        return jsonify(resultado=output)
+        return Response(json.dumps(output), mimetype="application/json")
+
+
+
+# ##############################################################################
 
 
 class Parser(Resource):
@@ -133,13 +158,22 @@ class Parser(Resource):
         
         return jsonify(resultado=output)
 
+# #############################################################################
+# Api resource routing
 
-
+# split a text into sentences
 api.add_resource(Splitter, "/splitter")
 
+# split a text into tokenized sentences
+api.add_resource(TokenizerSplitter, "/tokenizersplitter")
+
+# perform PoS tagging from an input text
 api.add_resource(Tagger, "/tagger")
+
+
+
 api.add_resource(Parser, "/parser")
 
 if __name__ == '__main__':
-    app.run(debug=True, port=9999)
+    app.run(debug=True, host="0.0.0.0", port=9999)
     #app.run(host="0.0.0.0")
