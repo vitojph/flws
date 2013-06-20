@@ -129,6 +129,34 @@ class Tagger(Resource):
         return Response(json.dumps(output), mimetype="application/json")
 
 
+# ##############################################################################
+
+
+class WSDTagger(Resource):
+    """Performs POS tagging and WSD from an input text."""
+
+    def post(self):
+        """docstring for post"""
+        text = request.json["texto"]
+        tokens = tk.tokenize(text)
+        sentences = sp.split(tokens, 0)
+        sentences = mf.analyze(sentences)
+        sentences = tg.analyze(sentences)
+        sentences = sen.analyze(sentences)
+
+        output = []
+        for sentence in sentences:
+            words = sentence.get_words()
+            for word in words:
+                lemas = []
+                lemas.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
+                # split the senses and get just the synset ID
+                synsets = []
+                [synsets.append(synsetID.split(":")[0]) for synsetID in word.get_senses_string().split("/")]
+                output.append(dict(palabra=word.get_form(), lemas=lemas, synsets=synsets))
+        
+        return Response(json.dumps(output), mimetype="application/json")
+
 
 # ##############################################################################
 
@@ -169,6 +197,10 @@ api.add_resource(TokenizerSplitter, "/tokenizersplitter")
 
 # perform PoS tagging from an input text
 api.add_resource(Tagger, "/tagger")
+
+# perform PoS tagging and WSD from an input text
+api.add_resource(WSDTagger, "/wsdtagger")
+
 
 
 
