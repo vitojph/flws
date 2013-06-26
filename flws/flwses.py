@@ -7,7 +7,7 @@ Simple flask-based API to access FreeLing functionalities.
 
 __author__ = "Víctor Peinado"
 __email__ = "vitojph@gmail.com"
-__date__ = "20/06/2013"
+__date__ = "26/06/2013"
 
 
 import freeling
@@ -58,6 +58,38 @@ api = Api(app)
 
 #parser = reqparse.RequestParser()
 #parser.add_argument("texto", type=unicode)
+
+
+# ##############################################################################
+def handleParsedTree(output, node, depth):
+    """Handles a parsed tree"""
+    info = node.get_info()
+    nch = node.num_children()
+
+    # if node is head and has no children
+    if nch == 0:
+        if info.is_head():
+            w = info.get_word()
+            output.append("+(%s %s %s)" % (w.get_form(), w.get_lemma(), w.get_tag()))
+    else:
+        # if node is head and has children
+        if info.is_head():
+            output.append("+%s_[" % (info.get_label()))
+        else:
+            # if node has children but isn't head
+            output.append("%s_[" % (info.get_label()))
+
+        # for each children, repeat process
+        for i in range(nch):
+            child = node.nth_child_ref(i)
+            handleParsedTree(output, child, depth+1)
+
+        # close node
+        output.append("]")
+
+    return output
+
+
 
 
 # ##############################################################################
@@ -234,29 +266,34 @@ class Parser(Resource):
 
     def post(self):
         """docstring for post"""
-        args = parser.parse_args()
-        text = unicode(args["texto"])
-        # tokenize and analyze the input string
+        text = request.json["texto"]
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
-        #if inpf == "":
         sentences = mf.analyze(sentences)
         sentences = tg.analyze(sentences)
         sentences = sen.analyze(sentences)
-        sentences = parser.analyze(sentences)
-        #ls = dep.analyze(ls)
-       
-        output = []
-        for sentence in sentences:
-            words = sentence.get_words()
-            for word in words:
-                output.append(dict(palabra=word.get_form(), lema=word.get_lemma(), categoria=word.get_tag())) #, synsets=word.get_senses_string()))
-        
-        return jsonify(resultado=output)
+	sentences = parser.analyze(sentences)
+
+	for sentence in sentences:
+	    tree = sentence.get_parse_tree()
+	    parsedtree = handleParsedTree([], tree.begin(), 0)
+                        
+	return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
+
+
+
+# ###############################################################################
+class DependencyParser(Resource):
+    """FreeLing Dependency Parser"""
+
+    def post(self):
+        pass
+
+
+
 
 # #############################################################################
 # Api resource routing
-
 # split a text into sentences
 api.add_resource(Splitter, "/splitter")
 
@@ -275,10 +312,9 @@ api.add_resource(NERecognizer, "/ner")
 # recognizes dates, currencies and quantities
 api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 
-
-
+# returns a parsed tree
 api.add_resource(Parser, "/parser")
 
+
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=8881)
-    #app.run(host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=9999)
