@@ -275,8 +275,9 @@ api.add_resource(NERecognizer, "/ner")
 # recognizes dates, currencies and quantities
 api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 
-#api.add_resource(Parser, "/parser")
 
+
+api.add_resource(Parser, "/parser")
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0", port=8881)
