@@ -2,11 +2,15 @@
 
 Ahora mismo tengo dos servicios diferentes, cada uno por un puerto diferente:
 
-1. uno para la **identificación de idioma** (puerto 8881). El proceso de cargas de frecuencias es bastante pesado, por eso lo arranco por separado.
+1. **identificación de idioma** (puerto `8881`). El proceso de cargas de frecuencias es bastante pesado, por eso lo arranco por separado.
 
-2. otro para los servicios de **análisis lingüístico del español** (puerto 8881).
+2. **análisis lingüístico del español** (puerto `8881`).
 
-La idea es que el resto de servicios de análisis para otras lenguas funcionen como los de español, pero por otros puertos (8882, 8883, etc), salvo que me digais lo contrario.
+3. **análisis lingüístico del catalán** (puerto `8882`).
+
+4. **análisis lingüístico del inglés** (puerto `8883`).
+
+
 
 
 ## Identificación de idioma
@@ -52,5 +56,11 @@ La idea es que el resto de servicios de análisis para otras lenguas funcionen c
 
     curl http://146.255.185.75:8881/datesquantities -H "Content-Type:application/json" -d '{"texto":"Llego el martes a las siete menos cuarto. Los diez kilos de tomates me costaron 35 euros. Llegó a 30 km/h."}' -X POST -s
     [{"expresion": "martes_a_las_siete_menos_cuarto", "entidades": [{"categoria": "temporal", "lema": "[M:??/??/??:6.45:??]"}]}, {"expresion": "diez", "entidades": [{"categoria": "numero", "lema": "10"}]}, {"expresion": "35_euros", "entidades": [{"categoria": "moneda", "lema": "$_ECU:35"}]}, {"expresion": "30_km_/_h", "entidades": [{"categoria": "magnitud", "lema": "SP_km/h:30"}]}]
+
+
+## Analizador sintáctico
+
+    curl http://127.0.0.1:8881/parser -H "Content-Type:application/json" -d '{"texto":"María es la hermana de mi vecino Antonio y vive en Madrid."}' -X POST -s
+    {"analisis": "S_[ sn_[ +grup-nom-ms_[ +w-ms_[ +(Mar\u00eda mar\u00eda NP00000) ] ] ] grup-verb_[ +verb_[ +(es ser VSIP3S0) ] ] sn_[ espec-fs_[ +j-fs_[ +(la el DA0FS0) ] ] +grup-nom-fs_[ +n-fs_[ +(hermana hermano NCFS000) ] ] ] sp-de_[ +(de de SPS00) sn_[ espec-ms_[ +pos-ms_[ +(mi mi DP1CSS) ] ] +grup-nom-ms_[ +n-ms_[ +(vecino vecino NCMS000) ] w-ms_[ +(Antonio antonio NP00000) ] ] ] ] coord_[ +(y y CC) ] grup-verb_[ +verb_[ +(vive vivir VMIP3S0) ] ] grup-sp_[ +prep_[ +(en en SPS00) ] sn_[ +grup-nom-ms_[ +w-ms_[ +(Madrid madrid NP00000) ] ] ] ] F-term_[ +(. . Fp) ] ]"}
 
 
