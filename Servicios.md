@@ -2,13 +2,23 @@
 
 Ahora mismo tengo dos servicios diferentes, cada uno por un puerto diferente:
 
-1. **identificación de idioma** (puerto `8881`). El proceso de cargas de frecuencias es bastante pesado, por eso lo arranco por separado.
+1. **identificación de idioma** (puerto `8880`). El proceso de cargas de frecuencias es bastante pesado, por eso lo arranco por separado.
 
 2. **análisis lingüístico del español** (puerto `8881`).
 
 3. **análisis lingüístico del catalán** (puerto `8882`).
 
 4. **análisis lingüístico del inglés** (puerto `8883`).
+
+5. **análisis lingüístico del bable** (puerto `8884`).
+
+6. **análisis lingüístico del gallego** (puerto `8885`).
+
+7. **análisis lingüístico del italiano** (puerto `8886`).
+
+8. **análisis lingüístico del portugués** (puerto `8887`).
+
+9. **análisis lingüístico del ruso** (puerto `8888`).
 
 
 
