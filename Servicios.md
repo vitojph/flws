@@ -1,6 +1,6 @@
 # Servicios disponibles
 
-Ahora mismo tengo dos servicios diferentes, cada uno por un puerto diferente:
+Ahora mismo están funcionando nueve servicios en la máquina `http://146.255.185.75`, cada uno por un puerto diferente:
 
 1. **identificación de idioma** (puerto `8880`). El proceso de cargas de frecuencias es bastante pesado, por eso lo arranco por separado.
 
@@ -21,14 +21,14 @@ Ahora mismo tengo dos servicios diferentes, cada uno por un puerto diferente:
 9. **análisis lingüístico del ruso** (puerto `8888`).
 
 
+# Ejemplos
 
-
-## Identificación de idioma
+## Identificación de idioma `http://146.255.185.75:8880/lang`
 
     curl http://146.255.185.75:8880/lang -H "Content-Type:application/json" -d '{"texto":"Mira que coisa mais linda."}' -X POST -s
     [{"lang": "pt"}]
 
-    curl http://146.255.185.75:8880/lang -H "Content-Type:application/json" -d '{"texto":"Sono appena arrivato da Milan."}' -X POST -s 
+    curl http://146.255.185.75:8880/lang -H "Content-Type:application/json" -d '{"texto":"Sono appena arrivato da Milano."}' -X POST -s 
     [{"lang": "it"}]
 
 
