@@ -29,10 +29,11 @@ freeling.util_init_locale("default");
 
 # Create options set for maco analyzer. Default values are Ok, except for data files.
 op = freeling.maco_options(LANG)
-op.set_active_modules(0,1,1,1,1,1,1,1,1,1,0)
+op.set_active_modules(0,1,1,1,1,1,0,1,1,1,0)
 op.set_data_files("",
         DATA + LANG + "/locucions.dat", 
-        DATA + LANG + "/quantities.dat", 
+        #DATA + LANG + "/quantities.dat", 
+        "",
         DATA + LANG + "/afixos.dat", 
         DATA + LANG + "/probabilitats.dat", 
         DATA + LANG + "/dicc.src", 
@@ -46,7 +47,7 @@ sp = freeling.splitter(DATA + LANG + "/splitter.dat")
 mf = freeling.maco(op)
 tg = freeling.hmm_tagger(LANG, DATA + LANG + "/tagger.dat", 1, 2)
 sen = freeling.senses(DATA+LANG+"/senses.dat")
-parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
+#parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 #dep = freeling.dep_txala(DATA + LANG+ "/dep/dependences.dat", parser.get_start_symbol())
 
 
@@ -313,7 +314,7 @@ api.add_resource(NERecognizer, "/ner")
 api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 
 # returns a parsed tree
-api.add_resource(Parser, "/parser")
+#api.add_resource(Parser, "/parser")
 
 
 if __name__ == '__main__':
