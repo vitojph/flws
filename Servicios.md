@@ -1,4 +1,4 @@
-# Servicios disponibles
+# Servicios REST de FreeLing
 
 Ahora mismo están funcionando nueve servicios en la máquina `http://146.255.185.75`, cada uno por un puerto diferente:
 
@@ -19,6 +19,20 @@ Ahora mismo están funcionando nueve servicios en la máquina `http://146.255.18
 8. **análisis lingüístico del portugués** (puerto `8887`).
 
 9. **análisis lingüístico del ruso** (puerto `8888`).
+
+
+## Servicios diponibles por lengua
+
+                                            ES CA EN AS GL IT PT RU
+    Segmentador de oraciones                X  X  X  X  X  X  X  X
+    Segmentador de oraciones y tokenizador  X  X  X  X  X  X  X  X
+    Etiquetador morfológico                 X  X  X  X  X  X  X  X
+    Etiquetador morfológico y desambiguador X  X  X     X  X  X
+    Reconocedor de entidades                X  X  X  X  X  X  X
+    Reconocedor de fechas y cantidades      X  X  X  X  X  X  X  X
+    Analizador sintáctico                   X  X  X  X  X     X
+
+    Analizador de dependencias              X  X  X  X  X 
 
 
 # Ejemplos
