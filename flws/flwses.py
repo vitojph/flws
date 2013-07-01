@@ -29,7 +29,7 @@ freeling.util_init_locale("default");
 
 # Create options set for maco analyzer. Default values are Ok, except for data files.
 op = freeling.maco_options(LANG)
-op.set_active_modules(0,1,1,1,1,1,1,1,1,1,0)
+op.set_active_modules(0,1,1,1,1,1,1,1,1,1,1)
 op.set_data_files("",
         DATA + LANG + "/locucions.dat", 
         DATA + LANG + "/quantities.dat", 
