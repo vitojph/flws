@@ -18,7 +18,7 @@ import json
 # #################################################################
 # FreeLing settings (borrowed from freeling-3.0/APIs/python/sample.py)
 
-PUNCTUATION = u""".,;:!?"""
+PUNCTUATION = u""".,;:!? """
 
 ## Modify this line to be your FreeLing installation directory
 FREELINGDIR = "/usr/local/"
@@ -197,7 +197,10 @@ class DatesQuatitiesRecognizer(Resource):
                         elif tag == "Zp":
                             category = "porcentaje"
                         elif tag == "Zu":
-                            category = "magnitud"                            
+                            category = "magnitud"
+                        else:
+                            category = "numero"
+                                                        
                         expression.append(dict(lema=word.get_lemma(), categoria=category))
                                         
                     output.append(dict(expresion=word.get_form(), entidades=expression))

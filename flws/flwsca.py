@@ -18,6 +18,8 @@ import json
 # #################################################################
 # FreeLing settings (borrowed from freeling-3.0/APIs/python/sample.py)
 
+PUNCTUATION = u""".,;:!? """
+
 ## Modify this line to be your FreeLing installation directory
 FREELINGDIR = "/usr/local/"
 DATA = FREELINGDIR + "share/freeling/"
@@ -55,9 +57,6 @@ parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 
 app = Flask(__name__)
 api = Api(app)
-
-#parser = reqparse.RequestParser()
-#parser.add_argument("texto", type=unicode)
 
 
 # ##############################################################################
@@ -98,8 +97,9 @@ class Splitter(Resource):
     """Splits an input text into sentences."""
     
     def post(self):
-        #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -121,6 +121,8 @@ class TokenizerSplitter(Resource):
     
     def post(self):
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -142,8 +144,9 @@ class NERecognizer(Resource):
     """Recognizes Named Entities from an input text."""
     
     def post(self):
-        #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -168,8 +171,9 @@ class DatesQuatitiesRecognizer(Resource):
     """Recognizes dates, currencies, and quatities from an input text."""
     
     def post(self):
-        #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -196,6 +200,9 @@ class DatesQuatitiesRecognizer(Resource):
                             category = "porcentaje"
                         elif tag == "Zu":
                             category = "magnitud"                            
+                        else:
+                            category = "numero"
+
                         expression.append(dict(lema=word.get_lemma(), categoria=category))
                                         
                     output.append(dict(expresion=word.get_form(), entidades=expression))
@@ -213,6 +220,8 @@ class Tagger(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -238,6 +247,8 @@ class WSDTagger(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -267,6 +278,8 @@ class Parser(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
