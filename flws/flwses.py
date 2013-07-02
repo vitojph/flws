@@ -18,14 +18,13 @@ import json
 # #################################################################
 # FreeLing settings (borrowed from freeling-3.0/APIs/python/sample.py)
 
+PUNCTUATION = u""".,;:!?"""
+
 ## Modify this line to be your FreeLing installation directory
 FREELINGDIR = "/usr/local/"
 DATA = FREELINGDIR + "share/freeling/"
 LANG = "es"
 freeling.util_init_locale("default");
-
-# Create language analyzer
-#la=freeling.lang_ident(DATA + "common/lang_ident/ident.dat")
 
 # Create options set for maco analyzer. Default values are Ok, except for data files.
 op = freeling.maco_options(LANG)
@@ -55,9 +54,6 @@ parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 
 app = Flask(__name__)
 api = Api(app)
-
-#parser = reqparse.RequestParser()
-#parser.add_argument("texto", type=unicode)
 
 
 # ##############################################################################
@@ -98,8 +94,9 @@ class Splitter(Resource):
     """Splits an input text into sentences."""
     
     def post(self):
-        #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -121,6 +118,8 @@ class TokenizerSplitter(Resource):
     
     def post(self):
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -142,8 +141,9 @@ class NERecognizer(Resource):
     """Recognizes Named Entities from an input text."""
     
     def post(self):
-        #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -170,6 +170,8 @@ class DatesQuatitiesRecognizer(Resource):
     def post(self):
         #args = parser.parse_args()
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -213,6 +215,8 @@ class Tagger(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -238,6 +242,8 @@ class WSDTagger(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -267,6 +273,8 @@ class Parser(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
+        if text[-1] not in PUNCTUATION: 
+            text =+ u"."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
