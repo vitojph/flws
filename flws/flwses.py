@@ -159,6 +159,7 @@ class NERecognizer(Resource):
                     entities.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
                     output.append(dict(palabra=word.get_form(), entidades=entities))
 
+        sentences, words = [], []
         return Response(json.dumps(output), mimetype="application/json")
 
 
@@ -263,7 +264,7 @@ class WSDTagger(Resource):
                 synsets = []
                 [synsets.append(synsetID.split(":")[0]) for synsetID in word.get_senses_string().split("/")]
                 output.append(dict(palabra=word.get_form(), lemas=lemmas, synsets=synsets))
-        
+
         return Response(json.dumps(output), mimetype="application/json")
 
 

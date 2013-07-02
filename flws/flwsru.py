@@ -252,9 +252,6 @@ api.add_resource(TokenizerSplitter, "/tokenizersplitter")
 # perform PoS tagging from an input text
 api.add_resource(Tagger, "/tagger")
 
-# perform PoS tagging and WSD from an input text
-api.add_resource(WSDTagger, "/wsdtagger")
-
 # perform NE recognition from an input text
 api.add_resource(NERecognizer, "/ner")
 
