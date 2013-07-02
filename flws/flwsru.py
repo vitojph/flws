@@ -139,32 +139,6 @@ class TokenizerSplitter(Resource):
         return Response(json.dumps(outputSentences), mimetype="application/json")
 
 
-# ##############################################################################
-
-class NERecognizer(Resource):
-    """Recognizes Named Entities from an input text."""
-    
-    def post(self):
-        text = request.json["texto"]
-        if text[-1] not in PUNCTUATION: 
-            text = text + "."
-        tokens = tk.tokenize(text)
-        sentences = sp.split(tokens, 0)
-        sentences = mf.analyze(sentences)
-        sentences = tg.analyze(sentences)
-        
-        output = []
-        for sentence in sentences:
-            words = sentence.get_words()
-            for word in words:
-                # Person (NP00SP0), Geographical location (NP00G00), Organization (NP00O00), and Others (NP00V00)
-                if word.get_tag() in "NP00SP0 NP00G00 NP00000 NP00V00".split():
-                    entities = []
-                    entities.append(dict(lema=word.get_lemma(), categoria=word.get_tag()))
-                    output.append(dict(palabra=word.get_form(), entidades=entities))
-
-        return Response(json.dumps(output), mimetype="application/json")
-
 
 # ##############################################################################
 
@@ -251,9 +225,6 @@ api.add_resource(TokenizerSplitter, "/tokenizersplitter")
 
 # perform PoS tagging from an input text
 api.add_resource(Tagger, "/tagger")
-
-# perform NE recognition from an input text
-api.add_resource(NERecognizer, "/ner")
 
 # recognizes dates, currencies and quantities
 api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
