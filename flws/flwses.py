@@ -96,7 +96,7 @@ class Splitter(Resource):
     def post(self):
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -119,7 +119,7 @@ class TokenizerSplitter(Resource):
     def post(self):
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         
@@ -143,7 +143,7 @@ class NERecognizer(Resource):
     def post(self):
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -171,7 +171,7 @@ class DatesQuatitiesRecognizer(Resource):
         #args = parser.parse_args()
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -216,7 +216,7 @@ class Tagger(Resource):
         """docstring for post"""
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -243,7 +243,7 @@ class WSDTagger(Resource):
         """docstring for post"""
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
@@ -274,7 +274,7 @@ class Parser(Resource):
         """docstring for post"""
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
-            text =+ u"."
+            text = text + "."
         tokens = tk.tokenize(text)
         sentences = sp.split(tokens, 0)
         sentences = mf.analyze(sentences)
