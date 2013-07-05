@@ -1,3 +1,7 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
 import freeling
 import json
 
@@ -62,7 +66,7 @@ def handleDepTree(node, depth):
     link = info.get_link()
     linfo = link.get_info()
     
-    print "%s/s/" % (link.get_info().get_label(), info.get_label())
+    print "%s/%s/" % (link.get_info().get_label(), info.get_label())
 
     w = node.get_info().get_word();
     print "%s %s %s" % (w.get_form(), w.get_lemma(), w.get_tag())
@@ -91,7 +95,7 @@ def handleDepTree(node, depth):
     
  
 #text = u"""Mi amigo Enrique partió hacia buen puerto el 4 de mayo. No he vuelto a saber de él. El equipo de los E.E.U.U. ha vencido a la URSS."""
-text = "El niño come manzanas."
+text = u"El niño come manzanas."
 
 if __name__ == "__main__":
     # tokenize and analyze the input string
