@@ -55,7 +55,6 @@ parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 app = Flask(__name__)
 api = Api(app)
 
-
 # ##############################################################################
 def handleParsedTree(output, node, depth):
     """Handles a parsed tree"""
@@ -84,7 +83,6 @@ def handleParsedTree(output, node, depth):
         output.append("]")
 
     return output
-
 
 
 
