@@ -319,7 +319,7 @@ class WSDTagger(Resource):
 
 
 class Parser(Resource):
-    """FreeLing parser: output in three formats: freeling, stanford and jsonified"""
+    """FreeLing parser with three output formats: freeling-like, stanford-like and jsonified"""
 
     def post(self):
         """docstring for post"""
