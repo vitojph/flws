@@ -70,15 +70,15 @@ def handleParsedTreeAsFL(tree, depth, output):
     else:
         # if node is head and has children
         if node.is_head():
-            output.append("+%s_[" % (info.get_label()))
+            output.append("+%s_[" % (node.get_label()))
         else:
             # if node has children but isn't head
-            output.append("%s_[" % (info.get_label()))
+            output.append("%s_[" % (node.get_label()))
 
         # for each children, repeat process
         for i in range(nch):
             child = tree.nth_child_ref(i)
-            handleParsedTree(child, depth+1, output)
+            handleParsedTreeAsFL(child, depth+1, output)
 
         # close node
         output.append("]")
@@ -321,7 +321,7 @@ class WSDTagger(Resource):
 class Parser(Resource):
     """FreeLing parser: output in three formats: freeling, stanford and jsonified"""
 
-    def post(self, format):
+    def post(self):
         """docstring for post"""
         text = request.json["texto"]
         format = request.json["format"]
@@ -335,17 +335,33 @@ class Parser(Resource):
         sentences = sen.analyze(sentences)
         sentences = parser.analyze(sentences)
 
+        # set up the output format
+        parsedtree = []
+        
         for sentence in sentences:
             tree = sentence.get_parse_tree()
             if format == "fl":
-                parsedtree = handleParsedTreeAsFL(tree.begin(), 0, [])
+                parsedtree = handleParsedTreeAsFL(tree.begin(), 0, parsedtree)
+            
             elif format == "string":
-                parsedtree = handleParsedTreeAsString(tree.begin(), 0, [])
+                # add the S(entence) tag
+                parsedtree.append("S(")
+                parsedtree = handleParsedTreeAsString(tree.begin(), 0, parsedtree)
+                # close the (S)entence
+                parsedtree.append(")")
+
             elif format == "json":
-                parsedtree = [dict(tag="S", parent="ROOT", level=0)]
+                # add the S tag with parent ROOT
+                parsedtree.append(dict(tag="S", parent="ROOT", level=0))
                 parsedtree = handleParsedTreeAsJSON(tree.begin(), 0, parsedtree)
-                        
-        return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
+        
+        #  format the output accordingly
+        if format == "fl" or format == "string":
+            return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
+
+        elif format == "json":
+            return Response(json.dumps(parsedtree), mimetype="application/json")
+
 
 
 # ###############################################################################
