@@ -59,43 +59,44 @@ def handleParsedTree(output, node, depth):
     return output
     
     
-def handleDepTree(node, depth):
+def handleDepTree(tree, depth, output):
     """Handles a parsed tree"""
-
-    info = node.get_info()
-    link = info.get_link()
+    node = tree.get_info()
+    link = node.get_link()
     linfo = link.get_info()
-    
-    print "%s/%s/" % (link.get_info().get_label(), info.get_label())
+    parentLabel = None
+    if depth > 0:
+        parentLabel = tree.get_parent().get_info().get_label()
 
-    w = node.get_info().get_word();
-    print "%s %s %s" % (w.get_form(), w.get_lemma(), w.get_tag())
+    w = tree.get_info().get_word()
+    output.append(dict(parent=parentLabel, rel=node.get_label(), label=link.get_info().get_label(), text=w.get_form(), lemma=w.get_lemma(), tag=w.get_tag()))
 
-    nch = node.num_children()
+    nch = tree.num_children()
     if nch > 0:
-        print " ["
+        #print " ["
 
         for i in range(nch):
-            d = node.nth_child_ref(i)
+            d = tree.nth_child_ref(i)
             if not d.get_info().is_chunk():
-                handleDepTree(d, depth+1)
+                handleDepTree(d, depth+1, output)
 
         ch = {}
         for i in range(nch):
-            d = node.nth_child_ref(i)
+            d = tree.nth_child_ref(i)
             if d.get_info().is_chunk():
                 ch[d.get_info().get_chunk_ord()] = d
  
         for i in sorted(ch.keys()):
-            handleDepTree(ch[i], depth+1)
+            handleDepTree(ch[i], depth+1, output)
 
-        print "]"
+        #print "]"
         
-    print
-    
+    #print
+    return output
+
  
 #text = u"""Mi amigo Enrique partió hacia buen puerto el 4 de mayo. No he vuelto a saber de él. El equipo de los E.E.U.U. ha vencido a la URSS."""
-text = u"El niño come manzanas."
+text = u"El niño come manzanas. Mi perro se llama Bobby."
 
 if __name__ == "__main__":
     # tokenize and analyze the input string
@@ -108,12 +109,13 @@ if __name__ == "__main__":
     sentences = dep.analyze(sentences)
     
 
-for sentence in sentences:
-    tree = sentence.get_parse_tree()
-    parsedtree = handleParsedTree("", tree.begin(), 0)    
-    print parsedtree
+#for sentence in sentences:
+#    tree = sentence.get_parse_tree()
+#    parsedtree = handleParsedTree("", tree.begin(), 0)    
+#    print parsedtree
     
 for sentence in sentences:
     tree = sentence.get_dep_tree()
-    handleDepTree(tree.begin(), 0)
+    output = handleDepTree(tree.begin(), 0, [])
+    print json.dumps(output)
 
