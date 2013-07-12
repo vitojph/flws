@@ -55,20 +55,21 @@ parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
 app = Flask(__name__)
 api = Api(app)
 
+
 # ##############################################################################
-def handleParsedTree(output, node, depth):
+def handleParsedTreeAsFL(tree, depth, output):
     """Handles a parsed tree"""
-    info = node.get_info()
-    nch = node.num_children()
+    node = tree.get_info()
+    nch = tree.num_children()
 
     # if node is head and has no children
     if nch == 0:
-        if info.is_head():
-            w = info.get_word()
+        if node.is_head():
+            w = node.get_word()
             output.append("+(%s %s %s)" % (w.get_form(), w.get_lemma(), w.get_tag()))
     else:
         # if node is head and has children
-        if info.is_head():
+        if node.is_head():
             output.append("+%s_[" % (info.get_label()))
         else:
             # if node has children but isn't head
@@ -76,14 +77,62 @@ def handleParsedTree(output, node, depth):
 
         # for each children, repeat process
         for i in range(nch):
-            child = node.nth_child_ref(i)
-            handleParsedTree(output, child, depth+1)
+            child = tree.nth_child_ref(i)
+            handleParsedTree(child, depth+1, output)
 
         # close node
         output.append("]")
 
     return output
 
+
+# ##############################################################################
+def handleParsedTreeAsString(tree, depth, output):
+    """Handles a parsed tree"""
+    node = tree.get_info()
+    nch = tree.num_children()
+    parent = tree.get_parent()
+
+    # if node is head and has no children
+    if nch == 0:
+        if node.is_head():
+            w = node.get_word()
+            output.append(u"%s/%s/%s" % (w.get_form(), w.get_lemma(), w.get_tag()))
+    else:
+        if depth > 0:
+            output.append(u"%s(" % node.get_label())
+        # for each children, repeat process
+        for i in range(nch):
+            child = tree.nth_child_ref(i)
+            handleParsedTreeAsString(child, depth+1, output)
+        
+        if depth > 0:
+            output.append(u")")
+
+    return output
+
+
+# ##############################################################################
+def handleParsedTreeAsJSON(tree, depth, output):
+    """Handles a parsed tree"""
+    node = tree.get_info()
+    nch = tree.num_children()
+    parent = tree.get_parent()
+
+    # if node is head and has no children
+    if nch == 0:
+        if node.is_head():
+            w = node.get_word()
+            output.append(dict(text=w.get_form(), tag=w.get_tag(), parent=parent.get_info().get_label(), level=depth))
+    else:
+        if depth > 0:
+            output.append(dict(tag=node.get_label(), parent=parent.get_info().get_label(), level=depth))
+        # for each children, repeat process
+        for i in range(nch):
+            child = tree.nth_child_ref(i)
+            handleParsedTreeAsJSON(child, depth+1, output)
+
+    return output
 
 
 # ##############################################################################
@@ -270,11 +319,13 @@ class WSDTagger(Resource):
 
 
 class Parser(Resource):
-    """FreeLing parser"""
+    """FreeLing parser: output in three formats: freeling, stanford and jsonified"""
 
-    def post(self):
+    def post(self, format):
         """docstring for post"""
         text = request.json["texto"]
+        format = request.json["format"]
+
         if text[-1] not in PUNCTUATION: 
             text = text + "."
         tokens = tk.tokenize(text)
@@ -282,14 +333,19 @@ class Parser(Resource):
         sentences = mf.analyze(sentences)
         sentences = tg.analyze(sentences)
         sentences = sen.analyze(sentences)
-	sentences = parser.analyze(sentences)
+        sentences = parser.analyze(sentences)
 
-	for sentence in sentences:
-	    tree = sentence.get_parse_tree()
-	    parsedtree = handleParsedTree([], tree.begin(), 0)
+        for sentence in sentences:
+            tree = sentence.get_parse_tree()
+            if format == "fl":
+                parsedtree = handleParsedTreeAsFL(tree.begin(), 0, [])
+            elif format == "string":
+                parsedtree = handleParsedTreeAsString(tree.begin(), 0, [])
+            elif format == "json":
+                parsedtree = [dict(tag="S", parent="ROOT", level=0)]
+                parsedtree = handleParsedTreeAsJSON(tree.begin(), 0, parsedtree)
                         
-	return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
-
+        return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
 
 
 # ###############################################################################
