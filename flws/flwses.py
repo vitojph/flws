@@ -123,7 +123,7 @@ def handleParsedTreeAsJSON(tree, depth, output):
     if nch == 0:
         if node.is_head():
             w = node.get_word()
-            output.append(dict(text=w.get_form(), tag=w.get_tag(), parent=parent.get_info().get_label(), level=depth))
+            output.append(dict(text=w.get_form(), lemma=w.get_lemma(), tag=w.get_tag(), parent=parent.get_info().get_label(), level=depth))
     else:
         if depth > 0:
             output.append(dict(tag=node.get_label(), parent=parent.get_info().get_label(), level=depth))
@@ -324,7 +324,10 @@ class Parser(Resource):
     def post(self):
         """docstring for post"""
         text = request.json["texto"]
-        format = request.json["format"]
+        try:
+            format = request.json["format"]
+        except KeyError:
+            format = "json"
 
         if text[-1] not in PUNCTUATION: 
             text = text + "."
