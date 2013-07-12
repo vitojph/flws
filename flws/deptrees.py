@@ -64,6 +64,7 @@ def handleDepTree(tree, depth, output):
     node = tree.get_info()
     link = node.get_link()
     linfo = link.get_info()
+
     parentLabel = None
     if depth > 0:
         parentLabel = tree.get_parent().get_info().get_label()
@@ -73,7 +74,6 @@ def handleDepTree(tree, depth, output):
 
     nch = tree.num_children()
     if nch > 0:
-        #print " ["
 
         for i in range(nch):
             d = tree.nth_child_ref(i)
@@ -89,9 +89,6 @@ def handleDepTree(tree, depth, output):
         for i in sorted(ch.keys()):
             handleDepTree(ch[i], depth+1, output)
 
-        #print "]"
-        
-    #print
     return output
 
  
