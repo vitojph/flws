@@ -138,39 +138,6 @@ def handleParsedTreeAsJSON(tree, depth, output):
     return output
 
 
-# #############################################################################
-def handleDepTree(tree, depth, output):
-    """Handles a parsed tree"""
-    node = tree.get_info()
-    link = node.get_link()
-    linfo = link.get_info()
-
-    parentLabel = None
-    if depth > 0:
-        parentLabel = tree.get_parent().get_info().get_label()
-
-    w = tree.get_info().get_word()
-    output.append(dict(parent=parentLabel, rel=node.get_label(), label=link.get_info().get_label(), text=w.get_form(), lemma=w.get_lemma(), tag=w.get_tag()))
-
-    nch = tree.num_children()
-    if nch > 0:
-
-        for i in range(nch):
-            d = tree.nth_child_ref(i)
-            if not d.get_info().is_chunk():
-                handleDepTree(d, depth+1, output)
-
-        ch = {}
-        for i in range(nch):
-            d = tree.nth_child_ref(i)
-            if d.get_info().is_chunk():
-                ch[d.get_info().get_chunk_ord()] = d
- 
-        for i in sorted(ch.keys()):
-            handleDepTree(ch[i], depth+1, output)
-
-    return output
-
 
 # ##############################################################################
 
@@ -402,36 +369,6 @@ class Parser(Resource):
 
 
 
-# ###############################################################################
-class DependencyParser(Resource):
-    """FreeLing Dependency Parser"""
-
-    def post(self):
-        """docstring for post"""
-        text = request.json["texto"]
-
-        if text[-1] not in PUNCTUATION: 
-            text = text + "."
-        tokens = tk.tokenize(text)
-        sentences = sp.split(tokens, 0)
-        sentences = mf.analyze(sentences)
-        sentences = tg.analyze(sentences)
-        sentences = sen.analyze(sentences)
-        sentences = parser.analyze(sentences)
-        sentences = dep.analyze(sentences)
-
-        # set up the output format
-        deptree = []
-        
-        for sentence in sentences:
-            tree = sentence.get_dep_tree()
-            deptree = handleDepTree(tree.begin(), 0, deptree)
-            
-        return Response(json.dumps(deptree), mimetype="application/json")
-
-
-
-
 # #############################################################################
 # Api resource routing
 # split a text into sentences
@@ -454,12 +391,6 @@ api.add_resource(DatesQuatitiesRecognizer, "/datesquantities")
 
 # returns a parsed tree
 api.add_resource(Parser, "/parser")
-
-# returns a dependency  tree
-api.add_resource(DependencyParser, "/dep")
-
-# returns a dependency  tree
-api.add_resource(DependencyParser, "/dep")
 
 
 if __name__ == '__main__':

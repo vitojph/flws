@@ -61,38 +61,6 @@ api = Api(app)
 
 
 # ##############################################################################
-def handleParsedTree(output, node, depth):
-    """Handles a parsed tree"""
-    info = node.get_info()
-    nch = node.num_children()
-
-    # if node is head and has no children
-    if nch == 0:
-        if info.is_head():
-            w = info.get_word()
-            output.append("+(%s %s %s)" % (w.get_form(), w.get_lemma(), w.get_tag()))
-    else:
-        # if node is head and has children
-        if info.is_head():
-            output.append("+%s_[" % (info.get_label()))
-        else:
-            # if node has children but isn't head
-            output.append("%s_[" % (info.get_label()))
-
-        # for each children, repeat process
-        for i in range(nch):
-            child = node.nth_child_ref(i)
-            handleParsedTree(output, child, depth+1)
-
-        # close node
-        output.append("]")
-
-    return output
-
-
-
-
-# ##############################################################################
 
 class Splitter(Resource):
     """Splits an input text into sentences."""

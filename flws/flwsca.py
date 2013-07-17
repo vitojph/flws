@@ -49,7 +49,7 @@ mf = freeling.maco(op)
 tg = freeling.hmm_tagger(LANG, DATA + LANG + "/tagger.dat", 1, 2)
 sen = freeling.senses(DATA+LANG+"/senses.dat")
 parser = freeling.chart_parser(DATA + LANG + "/chunker/grammar-chunk.dat")
-#dep = freeling.dep_txala(DATA + LANG+ "/dep/dependences.dat", parser.get_start_symbol())
+dep = freeling.dep_txala(DATA + LANG+ "/dep/dependences.dat", parser.get_start_symbol())
 
 
 # #################################################################
