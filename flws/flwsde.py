@@ -10,7 +10,7 @@ __email__ = "vitojph@gmail.com"
 __date__ = "17/07/2013"
 
 
-from pattern.de import parsetree
+from pattern.de import parsetree, Word
 from flask import Flask, Response, request
 from flask.ext.restful import Api, Resource
 import json
@@ -34,9 +34,9 @@ def handleParsedTreeAsString(parsedTree):
     output = []
 
     for sentence in parsedTree:
-        ouput.append("S(")
+        output.append("S(")
         for chunk in sentence.constituents(pnp=True):
-            ouput.append("%s(" % chunk.type)
+            output.append("%s(" % chunk.type)
             # handle PNP chunks
             if isinstance(chunk, Word):
                 output.append("%s/%s/%s" % (chunk.string, chunk.lemma, chunk.tag))
@@ -61,28 +61,37 @@ def handleParsedTreeAsString(parsedTree):
     
     
 # ##############################################################################
-def handleParsedTreeAsJSON(tree, depth, output):
-    """Handles a parsed tree"""
-    node = tree.get_info()
-    nch = tree.num_children()
-    parent = tree.get_parent()
 
-    # if node is head and has no children
-    if nch == 0:
-        if node.is_head():
-            w = node.get_word()
-            output.append(dict(text=w.get_form(), lemma=w.get_lemma(), tag=w.get_tag(), parent=parent.get_info().get_label(), level=depth))
-    else:
-        if depth > 0:
-            output.append(dict(tag=node.get_label(), parent=parent.get_info().get_label(), level=depth))
-        # for each children, repeat process
-        for i in range(nch):
-            child = tree.nth_child_ref(i)
-            handleParsedTreeAsJSON(child, depth+1, output)
+def handleParsedTreeAsJSON(parsedTree):
+    """Handles a pattern parsed tree and transforms it into a structured JSON format"""
+    output = []
+    parent = "ROOT"
+    depth = 0
 
+    for sentence in parsedTree:
+        output.append(dict(tag="S", parent=parent, level=depth))
+        depth = 1
+        parent = "S"
+        for chunk in sentence.constituents(pnp=True):
+            output.append(dict(tag=chunk.type, parent=parent, level=depth))
+            # handle PNP chunks
+            if isinstance(chunk, Word):
+                output.append(dict(text=chunk.string, lemma=chunk.lemma, tag=chunk.tag, parent=parent, level=depth))
+            else:
+                if chunk.type == "PNP":
+                    parent = "PNP"
+                    depth = 2
+                    for ch in chunk.chunks:
+                        output.append(dict(tag=ch.type, parent=parent, level=depth))
+                        parent = ch.type
+                        depth = 3
+                        for word in ch.words:
+                            output.append(dict(text=word.string, lemma=word.lemma, tag=word.tag, parent=parent, level=depth))
+                else:
+                    for word in chunk.words:
+                        output.append(dict(text=word.string, lemma=word.lemma, tag=word.tag, parent=parent, level=depth))
+    
     return output
-
-
 
 
 # ##############################################################################
@@ -128,9 +137,8 @@ class TokenizerSplitter(Resource):
             for w in sentence.get_words():
                 outputTokens.append(w.get_form())
             outputSentences.append(dict(oracion=outputTokens))
-    
-        return Response(json.dumps(outputSentences), mimetype="application/json")
 
+        return Response(json.dumps(outputSentences), mimetype="application/json")
 
 
 # ##############################################################################
@@ -209,7 +217,7 @@ class Parser(Resource):
         if format == "string":
             return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
         elif format == "json":
-            return Response(json.dumps(output), mimetype="application/json")
+            return Response(json.dumps(parsedtree), mimetype="application/json")
 
 
 
