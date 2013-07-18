@@ -29,61 +29,37 @@ api = Api(app)
 
 
 # ##############################################################################
-def handleParsedTreeAsFL(tree, depth, output):
-    """Handles a parsed tree"""
-    node = tree.get_info()
-    nch = tree.num_children()
+def handleParsedTreeAsString(parsedTree):
+    """Handles a pattern parsed tree and transforms it into a S(entence)"""
+    output = []
 
-    # if node is head and has no children
-    if nch == 0:
-        if node.is_head():
-            w = node.get_word()
-            output.append("+(%s %s %s)" % (w.get_form(), w.get_lemma(), w.get_tag()))
-    else:
-        # if node is head and has children
-        if node.is_head():
-            output.append("+%s_[" % (node.get_label()))
-        else:
-            # if node has children but isn't head
-            output.append("%s_[" % (node.get_label()))
-
-        # for each children, repeat process
-        for i in range(nch):
-            child = tree.nth_child_ref(i)
-            handleParsedTreeAsFL(child, depth+1, output)
-
-        # close node
-        output.append("]")
-
+    for sentence in parsedTree:
+        ouput.append("S(")
+        for chunk in sentence.constituents(pnp=True):
+            ouput.append("%s(" % chunk.type)
+            # handle PNP chunks
+            if isinstance(chunk, Word):
+                output.append("%s/%s/%s" % (chunk.string, chunk.lemma, chunk.tag))
+            else:
+                if chunk.type == "PNP":
+                    for ch in chunk.chunks:
+                        output.append("%s(" % ch.type)
+                        for word in ch.words:
+                            output.append("%s/%s/%s" % (word.string, word.lemma, word.tag))
+                    output.append(")")
+                    output.append(")")
+                else:
+                    for word in chunk.words:
+                        output.append("%s/%s/%s" % (word.string, word.lemma, word.tag))
+                        
+                
+            output.append(")")
+        output.append(")")
+    
     return output
-
-
-# ##############################################################################
-def handleParsedTreeAsString(tree, depth, output):
-    """Handles a parsed tree"""
-    node = tree.get_info()
-    nch = tree.num_children()
-    parent = tree.get_parent()
-
-    # if node is head and has no children
-    if nch == 0:
-        if node.is_head():
-            w = node.get_word()
-            output.append(u"%s/%s/%s" % (w.get_form(), w.get_lemma(), w.get_tag()))
-    else:
-        if depth > 0:
-            output.append(u"%s(" % node.get_label())
-        # for each children, repeat process
-        for i in range(nch):
-            child = tree.nth_child_ref(i)
-            handleParsedTreeAsString(child, depth+1, output)
-        
-        if depth > 0:
-            output.append(u")")
-
-    return output
-
-
+    
+    
+    
 # ##############################################################################
 def handleParsedTreeAsJSON(tree, depth, output):
     """Handles a parsed tree"""
@@ -209,7 +185,7 @@ class Parser(Resource):
         try:
             format = request.json["format"]
         except KeyError:
-            format = "json"
+            format = "string"
 
         # set tagset: default is STTS
         try:

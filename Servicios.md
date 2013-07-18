@@ -31,7 +31,7 @@ Ahora mismo están funcionando nueve servicios en la máquina `http://127.0.0.1`
     Reconocedor de entidades                X  X  X  X  X  X  X
     Reconocedor de fechas y cantidades      X  X  X  X  X  X  X  X
     Analizador sintáctico                   X  X  X  X  X     X
-    Analizador de dependencias              X  X  X  X  X
+    Analizador de dependencias              X  X  X     X
 
 
 # Ejemplos
