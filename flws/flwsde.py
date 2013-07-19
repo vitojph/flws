@@ -70,17 +70,17 @@ def handleParsedTreeAsJSON(parsedTree):
 
     for sentence in parsedTree:
         output.append(dict(tag="S", parent=parent, level=depth))
-        depth = 1
-        parent = "S"
         for chunk in sentence.constituents(pnp=True):
+            depth = 1
+            parent = "S"
             output.append(dict(tag=chunk.type, parent=parent, level=depth))
             # handle PNP chunks
             if isinstance(chunk, Word):
                 output.append(dict(text=chunk.string, lemma=chunk.lemma, tag=chunk.tag, parent=parent, level=depth))
             else:
+                parent = chunk.type
+                depth = 2
                 if chunk.type == "PNP":
-                    parent = "PNP"
-                    depth = 2
                     for ch in chunk.chunks:
                         output.append(dict(tag=ch.type, parent=parent, level=depth))
                         parent = ch.type
@@ -207,7 +207,6 @@ class Parser(Resource):
         else:
             parsing = parsetree(text, relations=True, lemmata=True, tagset=tagset)
 
-        # TODO: vas por aquí
         if format == "string":
             parsedtree = handleParsedTreeAsString(parsing)
         elif format == "json":
@@ -215,7 +214,7 @@ class Parser(Resource):
         
         #  format the output accordingly
         if format == "string":
-            return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
+            return Response(json.dumps(dict(tree=" ".join(parsedtree))), mimetype="application/json")
         elif format == "json":
             return Response(json.dumps(parsedtree), mimetype="application/json")
 
