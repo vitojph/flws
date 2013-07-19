@@ -76,7 +76,7 @@ def handleParsedTreeAsJSON(parsedTree):
             output.append(dict(tag=chunk.type, parent=parent, level=depth))
             # handle PNP chunks
             if isinstance(chunk, Word):
-                output.append(dict(text=chunk.string, lemma=chunk.lemma, tag=chunk.tag, parent=parent, level=depth))
+                output.append(dict(text=chunk.string, lemma=chunk.lemma, tag=chunk.tag, parent=chunk.type, level=depth+1))
             else:
                 parent = chunk.type
                 depth = 2
