@@ -392,8 +392,7 @@ class Parser(Resource):
         
         #  format the output accordingly
         if format == "fl" or format == "string":
-            return Response(json.dumps(dict(analisis=" ".join(parsedtree))), mimetype="application/json")
-
+            return Response(json.dumps(dict(tree=" ".join(parsedtree))), mimetype="application/json")
         elif format == "json":
             return Response(json.dumps(parsedtree), mimetype="application/json")
 
