@@ -103,16 +103,15 @@ class Splitter(Resource):
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
             text = text + "."
-        tokens = tk.tokenize(text)
-        sentences = sp.split(tokens, 0)
         
         # output list of sentences
         outputSentences = []
- 
-        for sentence in sentences:
+        parsedTree = parsetree(text)
+
+        for sentence in parsedTree:
             outputTokens = []
-            for w in sentence.get_words():
-                outputTokens.append(w.get_form())
+            for w in sentence.words:
+                outputTokens.append(w.string)
             outputSentences.append(dict(oracion=" ".join(outputTokens)))
     
         return Response(json.dumps(outputSentences), mimetype="application/json")
@@ -121,21 +120,20 @@ class Splitter(Resource):
 
 class TokenizerSplitter(Resource):
     """Splits an input text into tokenized sentences."""
-    
+
     def post(self):
         text = request.json["texto"]
         if text[-1] not in PUNCTUATION: 
             text = text + "."
-        tokens = tk.tokenize(text)
-        sentences = sp.split(tokens, 0)
         
         # output list of sentences
         outputSentences = []
-        
-        for sentence in sentences:
+        parsedTree = parsetree(text)
+
+        for sentence in parsedTree:
             outputTokens = []
-            for w in sentence.get_words():
-                outputTokens.append(w.get_form())
+            for w in sentence.words:
+                outputTokens.append(w.string)
             outputSentences.append(dict(oracion=outputTokens))
 
         return Response(json.dumps(outputSentences), mimetype="application/json")
@@ -224,10 +222,10 @@ class Parser(Resource):
 # #############################################################################
 # Api resource routing
 # split a text into sentences
-#api.add_resource(Splitter, "/splitter")
+api.add_resource(Splitter, "/splitter")
 
 # split a text into tokenized sentences
-#api.add_resource(TokenizerSplitter, "/tokenizersplitter")
+api.add_resource(TokenizerSplitter, "/tokenizersplitter")
 
 # perform PoS tagging from an input text
 api.add_resource(Tagger, "/tagger")
