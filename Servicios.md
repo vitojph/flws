@@ -53,11 +53,11 @@ Salida:
 - *lista de elementos* `lang`:`es|ca|en|fr|gl|it|pt|ru|de|none`
 
 
-    curl http://127.0.0.1:8880/lang -H "Content-Type:application/json" -d '{"texto":"Mira que coisa mais linda."}' -X POST -s
-    [{"lang": "pt"}]
+        curl http://127.0.0.1:8880/lang -H "Content-Type:application/json" -d '{"texto":"Mira que coisa mais linda."}' -X POST -s
+        [{"lang": "pt"}]
 
-    curl http://127.0.0.1:8880/lang -H "Content-Type:application/json" -d '{"texto":"Sono appena arrivato da Milano."}' -X POST -s 
-    [{"lang": "it"}]
+        curl http://127.0.0.1:8880/lang -H "Content-Type:application/json" -d '{"texto":"Sono appena arrivato da Milano."}' -X POST -s 
+        [{"lang": "it"}]
 
 
 ## Segmentador de oraciones `splitter`
